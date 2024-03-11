@@ -51,7 +51,7 @@ export function generatePollText(options: GenerationOptions): PollPost {
         ];
     } else {
         postTemplate = [
-            { text: `"${poll.question}"`, link: undefined, truncate: 'no', pollFacet: 'app.pollblue.poll.facet#question' },
+            { text: `"${poll.question}"`, link: undefined, truncate: 'no', pollFacet: 'blue.poll.post.facet#question' },
             { text: ` asked by `, link: undefined, truncate: 'yes' },
             { text: `@${author}`, link: `https://staging.bsky.app/profile/${author}/post/${postId}`, truncate: 'yes' },
             { text: `. Vote below!`, link: undefined, truncate: 'yes' },
@@ -65,7 +65,7 @@ export function generatePollText(options: GenerationOptions): PollPost {
             text: `${options.poll.answers[i]}`,
             link: `https://poll.blue/p/${visibleId}/${i + 1}`,
             truncate: 'no',
-            pollFacet: 'app.pollblue.poll.facet#option'
+            pollFacet: 'blue.poll.post.facet#option'
         });
         postTemplate.push({ text: '\n', link: undefined, truncate: 'no' });
     }
@@ -97,7 +97,7 @@ function buildTemplate(template: Template[]): PollPost {
         }
         const pollFacet = template[i].pollFacet;
         if (pollFacet) {
-            const feature = pollFacet === 'app.pollblue.poll.facet#question' ?
+            const feature = pollFacet === 'blue.poll.post.facet#question' ?
                 { $type: pollFacet } : { $type: pollFacet, number: questionIndex++ };
             pollFacets.push({
                 index: { byteStart: len, byteEnd: len + byteLength(template[i].text) },
@@ -119,7 +119,7 @@ export function postUriToBskyLink(postUri: string) {
     }
     // at://did:plc:hxqb73a2mcqwgyg64ibvw7ts/app.bsky.feed.post/3jtiwzc4lfh2o
     const [did, , post] = postUri.split("/").slice(-3);
-    return `https://staging.bsky.app/profile/${did}/post/${post}`;
+    return `https://bsky.app/profile/${did}/post/${post}`;
 }
 
 export function postLengthValid(text: string): boolean {

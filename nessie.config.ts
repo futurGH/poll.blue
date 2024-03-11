@@ -3,12 +3,14 @@ import {
     NessieConfig,
 } from "https://deno.land/x/nessie@2.0.10/mod.ts";
 
+
 const client = new ClientPostgreSQL({
-    database: "postgres",
-    hostname: "localhost",
-    port: 5432,
-    user: "postgres",
-    password: "",
+    database: "db",
+    hostname: Deno.env.get("DATABASE_URL") || "localhost",
+    port: 25060,
+    user: "db",
+    password: Deno.env.get("PG_PASSWORD") || "",
+    host_type: "tcp",
 });
 
 /** This is the final config object */

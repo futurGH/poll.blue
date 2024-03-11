@@ -7,11 +7,11 @@ import { load } from "https://deno.land/std@0.186.0/dotenv/mod.ts";
 const env = await load({ envPath: './.prod.env' });
 
 const client = new ClientPostgreSQL({
-    database: "postgres",
-    hostname: "127.0.0.1",
-    port: 6432,
-    user: "postgres",
-    password: env.PG_PASSWORD,
+    database: "db",
+    hostname: Deno.env.get("DATABASE_URL") || "localhost",
+    port: 25060,
+    user: "db",
+    password: Deno.env.get("PG_PASSWORD") || "",
     host_type: "tcp",
 });
 
