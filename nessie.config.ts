@@ -6,10 +6,10 @@ import {
 
 const client = new ClientPostgreSQL({
     database: "db",
-    hostname: Deno.env.get("DATABASE_URL") || "localhost",
+    hostname: Deno.env.get("DATABASE_URL"),
     port: 25060,
     user: "db",
-    password: Deno.env.get("PG_PASSWORD") || "",
+    password: Deno.env.get("PG_PASSWORD"),
     host_type: "tcp",
 });
 

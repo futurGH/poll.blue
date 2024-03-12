@@ -17,8 +17,19 @@ const configSchema = z.object({
 let config: z.infer<typeof configSchema> | undefined;
 
 export async function loadConfigFromEnv(): Promise<z.infer<typeof configSchema>> {
-    const env = await load();
-    config = configSchema.parse(env);
+    const env_vars = {
+        ENV: Deno.env.get("ENV"),
+        HOSTNAME: Deno.env.get("HOSTNAME"),
+        LOCALHOST: Deno.env.get("LOCALHOST"),
+        BSKY_USERNAME: Deno.env.get("BSKY_USERNAME"),
+        BSKY_PASSWORD: Deno.env.get("BSKY_PASSWORD"),
+        BSKY_HOST: Deno.env.get("BSKY_HOST"),
+        PG_USERNAME: Deno.env.get("PG_USERNAME"),
+        PG_PASSWORD: Deno.env.get("PG_PASSWORD"),
+        PG_DATABASE: Deno.env.get("PG_DATABASE"),
+        PG_HOST: Deno.env.get("PG_HOST")
+    }
+    config = configSchema.parse(env_vars);
     return config;
 }
 
