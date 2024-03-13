@@ -20,7 +20,12 @@ export async function connectToDb(settings: DbSettings) {
             connection: {
                 attempts: 5,
                 interval: 500,
-            }
+            },
+            host_type: "tcp",
+            tls: {
+              enabled: true,
+              enforce: true,
+            },
         });
     await client.connect();
 }
