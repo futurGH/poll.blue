@@ -16,7 +16,7 @@ export async function connectToDb(settings: DbSettings) {
             password: settings.password,
             database: settings.database,
             hostname: settings.hostname,
-            port: 5432,
+            port: 25060,
             connection: {
                 attempts: 5,
                 interval: 500,
