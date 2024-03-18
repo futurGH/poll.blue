@@ -21,6 +21,7 @@ export type Poll = {
 interface Template {
     text: string;
     link?: string;
+    mention?: string;
     pollFacet?: string;
     truncate: 'yes' | 'no';
 }
@@ -39,6 +40,19 @@ interface PollPost {
     pollFacets: AppBskyRichtextFacet.Main[];
 }
 
+async function resolveHandle(handle: string) {
+    try {
+        const response = await fetch(`https://bsky.social/xrpc/com.atproto.identity.resolveHandle?handle=${handle}`);
+        const data = await response.json();
+        if (data.did) {
+            return data.did;
+        }
+    } catch (error) {
+        console.error('Error resolving handle:', error);
+    }
+    return "";
+}
+
 export function generatePollText(options: GenerationOptions): PollPost {
     const emojiNumbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'];
     const emojiLetters = ['🅰', '🅱', '🅲', '🅳']
@@ -53,7 +67,7 @@ export function generatePollText(options: GenerationOptions): PollPost {
         postTemplate = [
             { text: `"${poll.question}"`, link: undefined, truncate: 'no', pollFacet: 'blue.poll.post.facet#question' },
             { text: ` asked by `, link: undefined, truncate: 'yes' },
-            { text: `@${author}`, link: `https://staging.bsky.app/profile/${author}/post/${postId}`, truncate: 'yes' },
+            { text: `@${author}`, link: undefined, mention: await resolveHandle(author), truncate: 'yes' },
             { text: `. Vote below!`, link: undefined, truncate: 'yes' },
             { text: `\n\n`, link: undefined, truncate: 'no' },
         ];
@@ -92,6 +106,16 @@ function buildTemplate(template: Template[]): PollPost {
                 features: [{
                     $type: 'app.bsky.richtext.facet#link',
                     uri: template[i].link
+                }]
+            })
+        }
+
+        if(template[i].mention) {
+            links.push({
+                index: { byteStart: len, byteEnd: len + byteLength(template[i].text) },
+                features: [{
+                    $type: 'app.bsky.richtext.facet#mention',
+                    did: template[i].mention
                 }]
             })
         }

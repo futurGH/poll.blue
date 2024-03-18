@@ -23,9 +23,16 @@ export default function Home() {
       </Head>
       <div class="p-4 mx-auto max-w-screen-md">
         <p class="my-2 text-white">
-          poll.blue is a polling app for Bluesky made by{" "}
+          poll.blue is a polling app for Bluesky run by{" "}
           <a
-            href="https://staging.bsky.app/profile/epistemic.horse"
+            href="https://bsky.app/profile/netwatch.dev"
+            class="hover:underline text-blue-500"
+          >
+            @netwatch.dev
+          </a>.
+          It was originally created by{" "}
+          <a
+            href="https://bsky.app/profile/epistemic.horse"
             class="hover:underline text-blue-500"
           >
             @epistemic.horse
