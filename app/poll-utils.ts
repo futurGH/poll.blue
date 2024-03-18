@@ -64,10 +64,11 @@ export function generatePollText(options: GenerationOptions): PollPost {
             { text: `${poll.question}\n\n`, link: undefined, truncate: 'no' },
         ];
     } else {
+        const author_did = await resolveHandle(author);
         postTemplate = [
             { text: `"${poll.question}"`, link: undefined, truncate: 'no', pollFacet: 'blue.poll.post.facet#question' },
             { text: ` asked by `, link: undefined, truncate: 'yes' },
-            { text: `@${author}`, link: undefined, mention: await resolveHandle(author), truncate: 'yes' },
+            { text: `@${author}`, link: undefined, mention: author_did, truncate: 'yes' },
             { text: `. Vote below!`, link: undefined, truncate: 'yes' },
             { text: `\n\n`, link: undefined, truncate: 'no' },
         ];
