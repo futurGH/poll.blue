@@ -53,7 +53,7 @@ async function resolveHandle(handle: string) {
     return "";
 }
 
-export function generatePollText(options: GenerationOptions): PollPost {
+export async function generatePollText(options: GenerationOptions): Promise<PollPost> {
     const emojiNumbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'];
     const emojiLetters = ['🅰', '🅱', '🅲', '🅳']
     const { visibleId, poll, replyRef, author } = options;
@@ -64,7 +64,7 @@ export function generatePollText(options: GenerationOptions): PollPost {
             { text: `${poll.question}\n\n`, link: undefined, truncate: 'no' },
         ];
     } else {
-        const author_did = resolveHandle(author).then((did) => did);
+        const author_did = await resolveHandle(author);
         postTemplate = [
             { text: `"${poll.question}"`, link: undefined, truncate: 'no', pollFacet: 'blue.poll.post.facet#question' },
             { text: ` asked by `, link: undefined, truncate: 'yes' },
