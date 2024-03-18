@@ -40,7 +40,7 @@ interface PollPost {
     pollFacets: AppBskyRichtextFacet.Main[];
 }
 
-function resolveHandle(handle: string) {
+async function resolveHandle(handle: string) {
     try {
         const response = await fetch(`https://bsky.social/xrpc/com.atproto.identity.resolveHandle?handle=${handle}`);
         const data = await response.json();
@@ -64,7 +64,7 @@ export function generatePollText(options: GenerationOptions): PollPost {
             { text: `${poll.question}\n\n`, link: undefined, truncate: 'no' },
         ];
     } else {
-        const author_did = resolveHandle(author);
+        const author_did = resolveHandle(author).then((did) => did);
         postTemplate = [
             { text: `"${poll.question}"`, link: undefined, truncate: 'no', pollFacet: 'blue.poll.post.facet#question' },
             { text: ` asked by `, link: undefined, truncate: 'yes' },
