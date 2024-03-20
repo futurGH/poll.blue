@@ -110,7 +110,7 @@ async function buildTemplate(template: Template[], agent: AtpAgent): Promise<Pol
 
     const rt = new RichText({ text });
     await rt.detectFacets(agent);
-    pollFacets.concat(rt.facets || []);
+    pollFacets = pollFacets.concat(rt.facets || []);
 
     return { text, links, pollFacets };
 }
