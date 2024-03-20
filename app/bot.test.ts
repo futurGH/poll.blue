@@ -5,7 +5,7 @@ import {
     AppBskyNotificationListNotifications,
     AppBskyFeedPost,
     ComAtprotoRepoCreateRecord
-} from "https://esm.sh/v115/@atproto/api@0.2.3";
+} from "https://esm.sh/v115/@atproto/api@0.12.2";
 import notificationsFixture from './fixtures/notifications.json' assert { type: "json" };
 import questionsFixture from './fixtures/questions.json' assert { type: "json" };
 import { Client } from "https://deno.land/x/postgres@v0.17.0/mod.ts";

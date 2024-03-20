@@ -1,6 +1,6 @@
 import { Bot } from "./bot.ts";
 import { getDbClient } from './db.ts';
-import { default as Agent } from "https://esm.sh/v115/@atproto/api@0.2.3"
+import { default as Agent } from "https://esm.sh/v115/@atproto/api@0.12.2"
 import TTL from "https://deno.land/x/ttl@1.0.1/mod.ts";
 import { getConfig } from "./config.ts";
 import { MockBsky } from "./mock-bsky.ts";
