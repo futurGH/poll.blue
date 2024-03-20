@@ -1,4 +1,4 @@
-import { AppBskyFeedPost, AppBskyRichtextFacet } from "https://esm.sh/v115/@atproto/api@0.2.3"
+import { AtpAgent, AppBskyFeedPost, AppBskyRichtextFacet, RichText } from "https://esm.sh/v115/@atproto/api@0.2.3"
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -21,6 +21,7 @@ export type Poll = {
 interface Template {
     text: string;
     link?: string;
+    mention?: boolean;
     pollFacet?: string;
     truncate: 'yes' | 'no';
 }
@@ -39,7 +40,7 @@ interface PollPost {
     pollFacets: AppBskyRichtextFacet.Main[];
 }
 
-export function generatePollText(options: GenerationOptions): PollPost {
+export async function generatePollText(options: GenerationOptions, agent: AtpAgent): Promise<PollPost> {
     const emojiNumbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'];
     const emojiLetters = ['🅰', '🅱', '🅲', '🅳']
     const { visibleId, poll, replyRef, author } = options;
@@ -47,33 +48,33 @@ export function generatePollText(options: GenerationOptions): PollPost {
     let postTemplate: Template[] = [];
     if (options.pollStyle === 'plain') {
         postTemplate = [
-            { text: `${poll.question}\n\n`, link: undefined, truncate: 'no' },
+            { text: `${poll.question}\n\n`, truncate: 'no' },
         ];
     } else {
         postTemplate = [
-            { text: `"${poll.question}"`, link: undefined, truncate: 'no', pollFacet: 'blue.poll.post.facet#question' },
-            { text: ` asked by `, link: undefined, truncate: 'yes' },
-            { text: `@${author}`, link: `https://bsky.app/profile/${author}/post/${postId}`, truncate: 'yes' },
-            { text: `. Vote below!`, link: undefined, truncate: 'yes' },
-            { text: `\n\n`, link: undefined, truncate: 'no' },
+            { text: `"${poll.question}"`, truncate: 'no', pollFacet: 'blue.poll.post.facet#question' },
+            { text: ` asked by `, truncate: 'yes' },
+            { text: `@${author}`, truncate: 'yes' },
+            { text: `. Vote below!`, truncate: 'yes' },
+            { text: `\n\n`, truncate: 'no' },
         ];
     }
     for (const [i, _answer] of options.poll.answers.entries()) {
         const item = poll.enumeration === 'number' ? emojiNumbers[i] : emojiLetters[i];
-        postTemplate.push({ text: `${item} `, link: undefined, truncate: 'no' });
+        postTemplate.push({ text: `${item} `, truncate: 'no' });
         postTemplate.push({
             text: `${options.poll.answers[i]}`,
             link: `https://poll.blue/p/${visibleId}/${i + 1}`,
             truncate: 'no',
             pollFacet: 'blue.poll.post.facet#option'
         });
-        postTemplate.push({ text: '\n', link: undefined, truncate: 'no' });
+        postTemplate.push({ text: '\n', truncate: 'no' });
     }
     postTemplate.push({ text: `\n`, link: undefined, truncate: 'no' });
     postTemplate.push({ text: `📊 Show results`, link: `https://poll.blue/p/${visibleId}/0`, truncate: 'no' });
-    let pollPost = buildTemplate(postTemplate);
+    let pollPost = await buildTemplate(postTemplate, agent);
     if (!postLengthValid(pollPost.text)) {
-        pollPost = buildTemplate(postTemplate.filter(t => t.truncate === 'no'))
+        pollPost = await buildTemplate(postTemplate.filter(t => t.truncate === 'no'), agent)
     }
     if (!postLengthValid(pollPost.text)) {
         throw new Error(`post too long: ${pollPost.text.length} bytes`)
@@ -81,7 +82,7 @@ export function generatePollText(options: GenerationOptions): PollPost {
     return pollPost;
 }
 
-function buildTemplate(template: Template[]): PollPost {
+async function buildTemplate(template: Template[], agent: AtpAgent): Promise<PollPost> {
     const links: AppBskyRichtextFacet.Main[] = [];
     const pollFacets: AppBskyRichtextFacet.Main[] = [];
     let questionIndex = 1;
@@ -106,6 +107,11 @@ function buildTemplate(template: Template[]): PollPost {
         }
     }
     const text = template.map(t => t.text).join('');
+
+    const rt = new RichText({ text });
+    await rt.detectFacets(agent);
+    pollFacets.concat(rt.facets || []);
+
     return { text, links, pollFacets };
 }
 
